@@ -28,17 +28,19 @@ Then to run the demo, execute `floorplan.sh` and navigate to [localhost:8080](ht
 Controlling the demo
 ----
 
-The demo as a fixed aspect ratio of 16:9 and is best viewed on a monitor with Full HD or better resolution. 
+The demo has a fixed aspect ratio of 16:9 and is best viewed on a monitor with Full HD or better resolution. 
 
 Some brief instructions:
 
-- Press `+` on your keyboard to add a card
-- Press `-` on your keyboard to remove the last added card
-- Click a card to show it's access rights
-- When a card is selected, click a room to add or remove it from the access rights of the selected card
-- When a card is selected, press `+` on your keyboard to add a card with identical access rights
-- Press `f` on your keyboard to enter fullscreen
-- Click on the reactor or press `e` on your keyboard to trigger an emergency
+- Press `+` on your keyboard to add a card.
+- Press `-` on your keyboard to remove the last added card.
+- Click a card to show it's access rights.
+- When a card is selected,
+  * click a room to add or remove it from the access rights of the selected card;
+  * press `+` on your keyboard to add a card with identical access rights;
+  * click the card again to deselect it.
+- Press `f` on your keyboard to enter fullscreen.
+- Click on the reactor or press `e` on your keyboard to trigger an emergency.
 - Select one of the last three entries for verification. The first two will not do anything and are only for illustrative purposes.
 
 Custom Buildings
