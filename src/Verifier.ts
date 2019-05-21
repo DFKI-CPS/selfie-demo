@@ -29,6 +29,82 @@ class Verifier {
   private staticAssertions: string[] = []
 
   constructor(public floorplan: Floorplan, public url: string) {
+    this.socket = new WebSocket(this.url)
+    let expect: null | ((line: string) => void) = null
+    this.socket.addEventListener("message", (e) => {
+      if (typeof e.data == "string") {
+        if (e.data == "reset\n") {
+          this.onStateChange_.publish(false)
+          if (this.resets.length > 0) {
+            let x = this.resets.shift()
+            if (x) x(this.result)
+            this.result = new VerifierResult()
+          }
+          if (this.scheduled.length > 0) {
+            window.setTimeout(() => {
+              this.onStateChange_.publish(true)
+              let x = this.scheduled.shift()
+              this.socket.send("(push)")
+              if (x) x().forEach(line => {
+                this.socket.send(line)
+              })
+              this.socket.send("(pop)")
+              this.socket.send('(echo "reset")')  
+            },50)
+          }
+        }        
+        if (expect) {
+          expect(e.data)
+          expect = null
+        } else {
+          let k = /^((door-[0-9]{2}).(fromTo|toFrom)):/g.exec(e.data)
+          if (k) {
+            let k1 = k[1]            
+            expect = (line) => {
+              let v = /^(true|false)/g.exec(line)
+              if (v && v[1] == "true") this.result.model.set(k1,true)
+              else if (v && v[1] == "false") this.result.model.set(k1,false)
+              else console.error("expected booelan got " + line)
+            }
+          }
+          let i = /^card-([0-9]+):/g.exec(e.data)
+          if (i) {
+            let i1 = Number.parseInt(i[1])
+            expect = (line) => {
+              let v = /^[0-9]+/g.exec(line)              
+              if (v) {                
+                this.result.model.set(this.floorplan.cards[i1], this.floorplan.rooms[Number.parseInt(v[0])])
+              }
+              else console.error("expected booelan got " + line)
+            }
+          }
+        }
+        if (e.data == "sat\n") {
+          this.result.sat = true
+        }
+        if (e.data == "unsat\n") {
+          this.result.sat = false
+        }
+        if (e.data.startsWith("(error")) {
+          console.error(e.data)
+        }
+      }}
+    )
+    this.socket.addEventListener("open", (e) => {
+      this.initStatic()
+      let z3 = (line: string) => {              
+        this.socket.send(line)
+      }
+      z3("(set-option :produce-models true)")
+      z3("(set-option :model.completion true)")
+      z3("(set-option :timeout 10000)")
+      this.floorplan.rooms.forEach((room,i) => {
+        z3(`(define-fun ${room.id} () Int ${i})`)        
+      })
+    })
+    window.addEventListener("beforeunload", (e) => {      
+      this.socket.close()      
+    })    
   }
 
   public setMode(mode: VerificationMode) {        
@@ -45,7 +121,7 @@ class Verifier {
   private resets: Array<(sat: VerifierResult) => void> = []
   private scheduled: Array<() => Array<string>> = []
 
-  public schedule(lines: () => string[]): Promise<VerifierResult> { 
+  public schedule: (lines: () => string[]) => Promise<VerifierResult> = (lines) => { 
     if (this.resets.length > 0)
       this.scheduled.push(lines) 
     else {

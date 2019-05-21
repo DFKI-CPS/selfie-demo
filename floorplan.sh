@@ -6,7 +6,6 @@ websocat --text -E\
     "/floorplan.svg:image/svg+xml:floorplan.svg"\
     "/floorplan.css:text/css:floorplan.css"\
     "/floorplan.js:application/ecmascript:floorplan.js"\
-    "/floorplan.old.js:application/ecmascript:floorplan.old.js"\
     "/floorplan.js.map:text/plain:floorplan.js.map"\
     "/images/logo.svg:image/svg+xml:images/logo.svg"\
     "/images/radioactive.svg:image/svg+xml:images/radioactive.svg"\

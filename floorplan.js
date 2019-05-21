@@ -865,6 +865,7 @@ var VerifierResult = /** @class */ (function () {
 }());
 var Verifier = /** @class */ (function () {
     function Verifier(floorplan, url) {
+        var _this = this;
         this.floorplan = floorplan;
         this.url = url;
         this.mode = VerificationMode.DoorAccess;
@@ -877,6 +878,103 @@ var Verifier = /** @class */ (function () {
         this.staticAssertions = [];
         this.resets = [];
         this.scheduled = [];
+        this.schedule = function (lines) {
+            if (_this.resets.length > 0)
+                _this.scheduled.push(lines);
+            else {
+                window.setTimeout(function () {
+                    _this.onStateChange_.publish(true);
+                    _this.socket.send("(push)");
+                    lines().forEach(function (line) { return _this.socket.send(line); });
+                    _this.socket.send('(pop)');
+                    _this.socket.send("(echo \"reset\")");
+                }, 0);
+            }
+            return new Promise(function (resolve, reject) { return _this.resets.push(resolve); });
+        };
+        this.socket = new WebSocket(this.url);
+        var expect = null;
+        this.socket.addEventListener("message", function (e) {
+            if (typeof e.data == "string") {
+                if (e.data == "reset\n") {
+                    _this.onStateChange_.publish(false);
+                    if (_this.resets.length > 0) {
+                        var x = _this.resets.shift();
+                        if (x)
+                            x(_this.result);
+                        _this.result = new VerifierResult();
+                    }
+                    if (_this.scheduled.length > 0) {
+                        window.setTimeout(function () {
+                            _this.onStateChange_.publish(true);
+                            var x = _this.scheduled.shift();
+                            _this.socket.send("(push)");
+                            if (x)
+                                x().forEach(function (line) {
+                                    _this.socket.send(line);
+                                });
+                            _this.socket.send("(pop)");
+                            _this.socket.send('(echo "reset")');
+                        }, 50);
+                    }
+                }
+                if (expect) {
+                    expect(e.data);
+                    expect = null;
+                }
+                else {
+                    var k = /^((door-[0-9]{2}).(fromTo|toFrom)):/g.exec(e.data);
+                    if (k) {
+                        var k1_1 = k[1];
+                        expect = function (line) {
+                            var v = /^(true|false)/g.exec(line);
+                            if (v && v[1] == "true")
+                                _this.result.model.set(k1_1, true);
+                            else if (v && v[1] == "false")
+                                _this.result.model.set(k1_1, false);
+                            else
+                                console.error("expected booelan got " + line);
+                        };
+                    }
+                    var i = /^card-([0-9]+):/g.exec(e.data);
+                    if (i) {
+                        var i1_1 = Number.parseInt(i[1]);
+                        expect = function (line) {
+                            var v = /^[0-9]+/g.exec(line);
+                            if (v) {
+                                _this.result.model.set(_this.floorplan.cards[i1_1], _this.floorplan.rooms[Number.parseInt(v[0])]);
+                            }
+                            else
+                                console.error("expected booelan got " + line);
+                        };
+                    }
+                }
+                if (e.data == "sat\n") {
+                    _this.result.sat = true;
+                }
+                if (e.data == "unsat\n") {
+                    _this.result.sat = false;
+                }
+                if (e.data.startsWith("(error")) {
+                    console.error(e.data);
+                }
+            }
+        });
+        this.socket.addEventListener("open", function (e) {
+            _this.initStatic();
+            var z3 = function (line) {
+                _this.socket.send(line);
+            };
+            z3("(set-option :produce-models true)");
+            z3("(set-option :model.completion true)");
+            z3("(set-option :timeout 10000)");
+            _this.floorplan.rooms.forEach(function (room, i) {
+                z3("(define-fun " + room.id + " () Int " + i + ")");
+            });
+        });
+        window.addEventListener("beforeunload", function (e) {
+            _this.socket.close();
+        });
     }
     Verifier.prototype.setMode = function (mode) {
         if (mode != this.mode) {
@@ -886,21 +984,6 @@ var Verifier = /** @class */ (function () {
     };
     Verifier.prototype.getMode = function () {
         return this.mode;
-    };
-    Verifier.prototype.schedule = function (lines) {
-        var _this = this;
-        if (this.resets.length > 0)
-            this.scheduled.push(lines);
-        else {
-            window.setTimeout(function () {
-                _this.onStateChange_.publish(true);
-                _this.socket.send("(push)");
-                lines().forEach(function (line) { return _this.socket.send(line); });
-                _this.socket.send('(pop)');
-                _this.socket.send("(echo \"reset\")");
-            }, 0);
-        }
-        return new Promise(function (resolve, reject) { return _this.resets.push(resolve); });
     };
     Verifier.prototype.initStatic = function () {
         var _this = this;
