@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SELFIE Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="./floorplan.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="./animate.css">
+  <script src="./floorplan.js"></script>
+</head>
+<body>
+  <div id="background"></div>
+  <div id="sidebar">
+    <img src="images/logo.svg" class="logo">  
+    <h1>Verification</h1>
+    <p>
+      <fieldset>
+        <input type="radio" id="v-pre" name="vtime" value="pre">        
+        <label for="v-pre">Pre-Deployment</label>
+        <input type="radio" id="v-top" name="vtime" value="top">        
+        <label for="v-top">Building known</label>
+        <input type="radio" id="v-acr" name="vtime" value="acr">        
+        <label for="v-acr">Access Rights known</label>
+        <input type="radio" id="v-acc" name="vtime" value="acc">        
+        <label for="v-acc">On Door Access</label>
+        <input type="radio" id="v-emg" name="vtime" value="emg">        
+        <label for="v-emg">On Emergency</label>
+      </fieldset>
+    </p>
+    <h1>Access Cards<button id="add">+</button></h1>  
+    <ul id="cards"></ul>
+  </div>  
+  <object id="floorplan" data="./floorplan.svg" type="image/svg+xml"></object>
+</body>
+</html>

@@ -1,0 +1,405 @@
+* {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;  
+  user-select: none;
+}
+
+html * {
+  font-size: 1vw;
+}
+
+
+#details-above, #labels {
+  pointer-events: none;
+}
+
+#indicator {
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+#indicator.visible {
+  opacity: 1;
+} 
+
+@keyframes emergencyIcon {
+  from {    
+    transform: scale(1)    
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(30)
+  }
+}
+
+#reactor > image {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  transform: scale(1)
+}
+
+#reactor:not(.emergency):hover > image {
+  opacity: 0.5;
+}
+
+#reactor.emergency > image {
+  animation-name: emergencyIcon;
+  animation-duration: 2s;  
+  opacity: 0;
+}
+
+@keyframes emergencyCircle {
+  from {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 #E31A1C);
+    fill: #E31A1C;
+  }
+
+  to {
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 30 #FDBF6F);
+    fill: #FDBF6F;
+  }
+}
+
+#reactor > circle {
+  transition: fill 0.5s ease;
+  transform: scale(1);
+  filter: none;
+  fill: rgba(255,255,255,0.1)
+}
+
+#reactor.emergency > circle {
+  fill: #E31A1C;
+  stroke: none;
+  animation-name: emergencyCircle;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+}
+
+.room {
+  fill: rgba(255,255,255,0.1);
+  transition: fill 0.2s ease;
+}
+
+.room.ko {
+  fill: #E31A1C !important;
+}
+
+.room:hover:not(#outside).auth {
+  fill: rgba(0,0,0,0.1);
+}
+
+.room:not(#outside).no-auth {
+  fill: rgba(0,0,0,0.3);
+}
+
+.room:not(#outside).no-auth:hover {
+  fill: rgba(0,0,0,0.2);
+}
+
+.regular.door {    
+  stroke-width: 3;
+  stroke: rgba(255,255,255,0.8)
+}
+
+.door {
+  transition: all 0.2s ease;
+}
+
+.door.active {  
+  stroke-width: 12;
+  stroke: #FDBF6F;
+  /*stroke-linecap: round;*/
+}
+
+.door.ok {
+  stroke-width: 12;
+  stroke: #33A02C;
+  /*stroke-linecap: round;*/
+}
+
+.door.ko {
+  stroke-width: 12;
+  stroke: #E31A1C;
+  /*stroke-linecap: round;*/
+}
+
+.door.close {
+  stroke: #000
+}
+
+.regular.door.close {
+  opacity: 0;
+}
+
+.door.open.in, .door.open.out {
+  stroke: #fff !important;
+}
+
+.arrow {
+  stroke-width: 2px;
+}
+
+.arrow.open {
+  stroke: #000
+}
+
+.arrow.open.in {
+  marker-end: url('#arrowEnd')
+}
+
+.arrow.open.out {
+  marker-start: url('#arrowStart')
+}
+
+/*.person {
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, .7));
+}*/
+
+.open.door {
+  stroke-width: 3;
+  stroke: rgba(255,255,255,0.5);
+}
+
+
+
+.person.p01 { fill: #FF7F00; }
+.person.p02 { fill: #FDBF6F; }
+.person.p03 { fill: #E31A1C; }
+.person.p04 { fill: #FB9A99; }
+.person.p05 { fill: #33A02C; }
+.person.p06 { fill: #B2DF8A; }
+.person.p07 { fill: #1F78B4; }
+.person.p08 { fill: #A6CEE3; }
+
+.card.p01 { background-color: #FF7F00; }
+.card.p02 { background-color: #FDBF6F; }
+.card.p03 { background-color: #E31A1C; }
+.card.p04 { background-color: #FB9A99; }
+.card.p05 { background-color: #33A02C; }
+.card.p06 { background-color: #B2DF8A; }
+.card.p07 { background-color: #1F78B4; }
+.card.p08 { background-color: #A6CEE3; }
+
+fieldset {
+  border: none; 
+  padding: 0 1vw;
+}
+
+.verifying fieldset {
+  background-color: yellow
+}
+
+.success fieldset {
+  background-color: #33A02C
+}
+
+.failure fieldset {
+  background-color: #E31A1C
+}
+
+fieldset > label {
+  display: block;
+  color: #aaa;
+  transition: color 0.2s ease;
+  padding-bottom: 0.5vw;
+  overflow: visible;
+  position: relative;
+}
+
+fieldset > input[type="radio"] {
+  display: none;
+}
+
+fieldset > input[type="radio"]:checked+label {
+  color: #000;
+}
+
+label[for="v-pre"]::after {
+  content: '';
+  border-color: #E31A1C;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.5vw;
+}
+
+label[for="v-top"] {
+
+}
+
+label[for="v-acr"] {
+  border-color: #F39511;    
+}
+
+.person {
+  stroke: rgba(128,128,128,0.7);
+  transition: stroke-width 0.5s ease, r 0.5s ease, opacity 1s ease;  
+  stroke-width: 0;
+  opacity: 1;
+}
+
+.person.absent {
+  opacity: 0;
+}
+
+.person.active {  
+  stroke-width: 8;
+  r: 8;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;  
+}
+
+#background {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+}
+
+#sidebar {
+  position: fixed;
+  user-select: none;
+  -webkit-user-select: none;
+  top: 0;
+  left: 0;
+  width: 20vw;
+  height: 56.25vw;
+  background-color: rgba(0,0,0,0.1);
+}
+
+#sidebar > :first-child {
+  margin-top: 1vw;
+}
+
+#sidebar .logo {
+  width: 19vw;
+  margin: 1vw;
+}
+
+#sidebar h1 {
+  text-transform: uppercase;
+  border-image: linear-gradient(to right,#F39511,transparent) 100% 1;
+  border-bottom-width: 0.25px;
+  border-bottom-style: solid;
+  border-top: 0;
+  color: #194C7A;
+  font-weight: 300;
+  margin: 0;
+  padding: 0 1vw;  
+  font-size: 1.563vw;
+  line-height: 1.2;
+  padding-bottom: 0.5vw;
+}
+
+#add {
+  float: right;
+}
+
+#evacuate {
+  margin: 1vw;
+  transition: filter 0.2s ease;
+  filter: grayscale(1.0); 
+}
+
+#evacuate.active {
+  filter: grayscale(0.0);
+}
+
+#sidebar ul#cards {
+  padding: 0;
+  display: grid;
+  grid-column-gap: 0.5vw;
+  grid-row-gap: 0.5vw;
+  margin: 1vw;
+  place-items: start;  
+}
+
+#sidebar li.card::before {
+  content: "";
+  display: inline-block;
+  width: 0.01vw;
+  height: 0;
+  padding-bottom: 63%;
+}
+
+#sidebar li.card {
+  display: inline-block;
+  box-shadow: 0.0vw 0.0vw 0.0vw #000;
+  list-style: none;
+  margin: 0;
+  width: 100%;
+  line-height: 100%;
+  border-radius: 4%;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#sidebar li.card.active {
+  box-shadow: 0.1vw 0.1vw 0.4vw #000;
+}
+
+#sidebar li.card::after {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  right: 0;
+  padding-bottom: 15%;
+  background-color: rgba(0,0,0,0.8);
+  content: ' ';
+}
+
+#floorplan {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80vw;
+  height: 56.25vw;
+}
+
+.path.focus {
+  stroke: #f00;  
+}
+
+.path.focus.from {
+  marker-start: url(#arrowStart);
+}
+
+.path.focus.to {
+  marker-end: url(#arrowEnd);
+}
+
+.path.focus.room {
+  stroke-width: 0.5vw;
+}
+
+.door.focus {
+  stroke: #B2DF8A;
+  stroke-width: 0.5vw;
+  stroke-dasharray: none;
+}
+
+div#buttons {
+  display: flex;
+  justify-content: center;
+  height: 4vw;
+}
+
+div#buttons img {
+  width: 4vw;
+}
+
